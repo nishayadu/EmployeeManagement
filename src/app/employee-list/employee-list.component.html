@@ -1,0 +1,249 @@
+<style>
+  .center_div{
+    margin: 0 auto;
+    width:40%;
+    border:1px solid;
+}
+.error
+{
+  color:red;
+  font-weight: bold;
+}
+.pointer {cursor: pointer;}
+</style>
+<br/>
+<div class="bs-example container-fluid" >
+  <input type="button" class="btn btn-success" style="margin-left:auto;margin-right:auto;display:block;" value="Get Employee" (click)="getemp()"/> 
+ <br/>
+ <br/>
+  <div *ngIf="showList" class="panel panel-primary" style="width:800px; margin-left:390px;">
+      <div class="panel-heading" style="font-size: 22px; text-align: center; font-family: tahoma;">List Of Employee Details
+          <i style="margin-left: 300px;" class="fa fa-book pointer" aria-hidden="true" data-toggle="modal" data-target="#myModalactivity" ></i>
+          <i style="margin-left: 30px;" class="fa fa-refresh pointer" aria-hidden="true" (click)="getemp()" ></i>
+          <i style="margin-left: 30px;" id="addemployee" title="Add Employee" class="fa fa-plus pointer" aria-hidden="true" data-toggle="modal" data-target="#myModaladd" (click)="randomIntFromInterval(1000,9999); myFunc();"></i>
+      </div>
+  </div>
+  <table  id="myTable" *ngIf="showList" class="table table-bordered  table-condensed" style="border:1 solid; width:1000px; margin-left:300px; margin-top:-30px;"
+  
+  >
+    <thead>
+          <tr class="btn-primary" style="font-size: 18px;">
+              <th>S.No</th>
+              <th style="display:none;">Employee ID</th>
+              <th [class.active]="order === 'ename'"
+              (click)="setOrder('ename')">Employee Name
+                  <span [hidden]="reverse">▼</span
+                    ><span [hidden]="!reverse">▲</span>
+              </th>
+              <th>Designation</th>
+              <th>Department</th>
+              <th>Salary</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody>
+        
+        <tr  *ngFor="let employee of emp_array | orderBy: order:reverse:'case-insensitive' index as i; "  >
+              <td>{{i+1}}</td>
+              <td style="display:none;">{{employee.employee_id}}</td>
+              <td><a  data-toggle="modal"  title="Edit Employee" data-target="#myModaledit"  (click)="selectItem(employee.employee_id)">{{employee.ename}}</a></td>
+              <td>{{employee.designation}}</td>
+              <td>{{employee.department}}</td>
+              <td>{{employee.salary | currency: 'INR':'symbol' }}</td>
+              <td>&nbsp;&nbsp;&nbsp;&nbsp;<a  title="Delete Employee" (click)="getrecord(employee)" data-toggle="modal" data-target="#myModaldelete"><i class="fa fa-trash pointer" aria-hidden="true"></i></a> &nbsp; &nbsp;
+            <!--    <a data-toggle="modal" data-target="#myModaledit"  (click)="selectItem(employee.employee_id)" title="Edit Employee" >  <i class="fa fa-pencil pointer" aria-hidden="true"></i></a> -->
+              </td>
+          </tr>
+        
+       </tbody>
+  </table>
+  
+</div>
+
+
+<!-- Modal Popup to Add Employee Record Start-->
+
+<!-- Modal -->
+<div class="modal fade" id="myModaladd" role="dialog" tabindex="-1" aria-hidden="true"  data-dismiss="modal">
+    <div class="modal-dialog">
+     <form class="form-horizontal"  #formadd="ngForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="text-align: center; font-weight: bold;color:brown;">ADD NEW EMPLOYEE</h4>
+        </div>
+        <div class="modal-body">
+            
+               
+              <div class="form-group ">
+                  <label for="Employee Id" class="col-sm-4 control-label">Employee Id:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empid" [appHighlight]="color" name="empid" #empid="ngModel" [(ngModel)]="randomstring" readonly >
+                 <span class="error" *ngIf="empid.invalid && empid.dirty">Employee ID is Required</span>
+                </div>
+              </div> 
+              <div class="form-group ">
+                  <label for="Employee Name" class="col-sm-4 control-label">Employee Name:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empname" [appHighlight]="color" name="empname"    [(ngModel)]="ename" minlength="3"  #empname="ngModel" required/>
+                  <span class="error" *ngIf="empname.invalid">Employee Name should be 3 character long.</span>
+                  
+                </div>
+              </div> 
+              <div class="form-group">
+                  <label for="Department"  class="col-sm-4 control-label">Department:</label>
+                  <div class="col-sm-4"> 
+                    
+                     
+                       <select [(ngModel)]="department" id="department" name="department" class="form-control" [appHighlight]="color"  required> 
+                        <option  value="" selected hidden>Select Department</option>
+                        <option *ngFor="let dept of dept" value={{dept.name}}>{{dept.name}}</option>
+      
+                      </select> 
+                      <span class="error" *ngIf="department.invalid ">Employee Department is Required.</span>
+                </div>
+              </div> 
+              <div class="form-group">
+                  <label for="Designation"  class="col-sm-4 control-label">Designation:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empdes" [appHighlight]="color" name="empdes"  [(ngModel)]="designation" #empdes="ngModel"  required >
+                  <span class="error" *ngIf="empdes.invalid">Employee Designation is Required</span>
+                </div>
+              </div> 
+              <div class="form-group">
+                  <label for="Salary"  class="col-sm-4 control-label">Salary:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empsal" [appHighlight]="color" name="empsal"   [(ngModel)]="salary" > 
+                  
+                </div>
+              </div> 
+            
+        </div>
+      <div class="modal-footer">
+          <button type="submit" [disabled]="formadd.invalid"  class="btn btn-success" data-dismiss="modal" (click)="addemp()" #closeadd >Ok</button> 
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div> 
+      </div>
+    </form> 
+    </div>
+  </div>
+  <!-- Modal Popup to Add Employee Record Ends-->
+
+  <!-- Modal Popup to Delete Employee Record Starts-->
+  <div class="modal fade" id="myModaldelete" role="dialog">
+      <div class="modal-dialog">
+      
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="text-align: center; font-weight: bold;">DELETE EMPLOYEE RECORD</h4>
+          </div>
+          <div class="modal-body">
+            <p>Are You Sure You Want to Delete Record of <strong>{{getemployeedetail.ename}}</strong> with Employee Id <strong>{{getemployeedetail.employee_id}}</strong>?</p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-success" data-dismiss="modal" (click)="removeemp(getemployeedetail.employee_id)">Yes</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+<!-- Modal Popup to Delete Employee Record Ends-->
+
+    
+
+
+  <!-- Modal Popup to show activity Log-->
+  <div class="modal fade" id="myModalactivity" role="dialog">
+      <div class="modal-dialog">
+      
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="text-align: center; font-weight: bold;">Activity Log</h4>
+          </div>
+          <div class="modal-body">
+              <div *ngFor='let message of _activitylog.messages'> <strong> {{message}} </strong> </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-success" data-dismiss="modal">Ok</button>
+            
+          </div>
+        </div>
+        
+      </div>
+    </div>
+<!-- Modal Popup for Activity Log Ends-->
+
+<!-- Modal Popup to Edit Employee Record Start-->
+
+<!-- Modal -->
+<div class="modal fade" id="myModaledit" role="dialog" tabindex="-1" aria-hidden="true"  data-dismiss="modal">
+    <div class="modal-dialog">
+     <form class="form-horizontal" #formedit="ngForm" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="text-align: center; font-weight: bold;color:brown;">EDIT EMPLOYEE RECORD</h4>
+        </div>
+        <div class="modal-body">
+            
+               
+              <div class="form-group ">
+                  <label for="Employee Id" class="col-sm-4 control-label">Employee Id:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empid" [appHighlight]="color" name="empid" #empid="ngModel" placeholder="Employee ID" [(ngModel)]="employee_id" readonly >
+                 <span class="error" *ngIf="empid.invalid && empid.dirty">Employee ID is Required</span>
+                </div>
+              </div> 
+              <div class="form-group ">
+                  <label for="Employee Name" class="col-sm-4 control-label">Employee Name:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empname" [appHighlight]="color" name="empname"  #empname="ngModel" placeholder="Name" [(ngModel)]="ename" minlength="3" >
+                  <span class="error" *ngIf="empname.invalid ">Employee Name should be 3 character long.</span>
+                </div>
+              </div> 
+              <div class="form-group">
+                  <label for="Department"  class="col-sm-4 control-label">Department:</label>
+                  <div class="col-sm-4"> 
+                    
+                     
+                       <select [(ngModel)]="department" id="department" name="department" class="form-control" [appHighlight]="color"  required> 
+                        <option  value="" selected hidden>Select Department</option>
+                        <option *ngFor="let dept of dept" value={{dept.name}}>{{dept.name}}</option>
+      
+                      </select> 
+                      <span class="error" *ngIf="department.invalid && department.dirty">Employee Department is Required.</span>
+                </div>
+              </div> 
+              <div class="form-group">
+                  <label for="Designation"  class="col-sm-4 control-label">Designation:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empdes" [appHighlight]="color" name="empdes" #empdes="ngModel" placeholder="Designation" [(ngModel)]="designation" required >
+                  <span class="error" *ngIf="empdes.invalid && empdes.dirty ">Employee Designation is Required</span>
+                </div>
+              </div> 
+              <div class="form-group">
+                  <label for="Salary"  class="col-sm-4 control-label">Salary:</label>
+                  <div class="col-sm-4">
+                  <input type="text" class="form-control" id="empsal" [appHighlight]="color" name="empsal"  placeholder="Salary" [(ngModel)]="salary" > 
+                  
+                </div>
+              </div> 
+            
+        </div>
+       <div class="modal-footer">
+          <button type="submit" [disabled]="formedit.invalid"  class="btn btn-success"  (click)="updateitem()" data-dismiss="modal"  #closeupdate >Ok</button> 
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+
+          
+        </div> 
+      </div>
+    </form> 
+    </div>
+  </div>
+  <!-- Modal Popup to Edit Employee Record Ends-->
+  

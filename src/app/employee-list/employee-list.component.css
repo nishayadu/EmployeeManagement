@@ -1,0 +1,11 @@
+.center_div{
+    margin: 0 auto;
+    width:40%;
+    border:1px solid;
+}
+.error
+{
+  color:red;
+  font-weight: bold;
+}
+.pointer {cursor: pointer;}

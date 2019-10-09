@@ -1,0 +1,110 @@
+
+<style>
+   
+  .error
+  {
+    color:red;
+    font-weight: bold;
+  }
+  .pointer {cursor: pointer;}
+  </style>
+  <br/>
+  <br/>
+  <br/>
+<br/>
+<div class="container-fluid" style="border:1 solid; width:1000px; margin-left:300px; margin-top:-30px;">
+<form class="form-horizontal" #form1="ngForm" >
+    <div class="form-group ">
+        <label for="Employee Id" class="col-sm-4 control-label">Employee Id:</label>
+        <div class="col-sm-4">
+        <input type="text" class="form-control" id="empid" [appHighlight]="color" name="empid" #empid="ngModel" placeholder="Employee ID" [(ngModel)]="emp_array.employee_id"  required readonly>
+       <span class="error" *ngIf="empid.invalid ">Employee ID is Required</span>
+      </div>
+    </div> 
+    <div class="form-group ">
+        <label for="Employee Name" class="col-sm-4 control-label">Employee Name:</label>
+        <div class="col-sm-4">
+        <input type="text" class="form-control" id="empname" [appHighlight]="color" name="empname"  #empname="ngModel" placeholder="Name" [(ngModel)]="emp_array.ename" minlength="3" maxlength="20">
+        <span class="error" *ngIf="empname.invalid && empname.dirty">Employee Name should be 3 character long.</span>
+      </div>
+    </div> 
+    <div class="form-group">
+        <label for="Department"  class="col-sm-4 control-label">Department:</label>
+        <div class="col-sm-4"> 
+          
+           
+             <select [(ngModel)]="emp_array.department" id="department" name="department" class="form-control" [appHighlight]="color" required> 
+              <option  value="" selected hidden>Select Department</option>
+              <option *ngFor="let dept of dept" value={{dept.name}}>{{dept.name}}</option>
+
+            </select> 
+            
+      </div>
+    </div> 
+    <div class="form-group">
+        <label for="Designation"  class="col-sm-4 control-label">Designation:</label>
+        <div class="col-sm-4">
+        <input type="text" class="form-control" id="empdes" [appHighlight]="color" name="empdes" #empdes="ngModel" placeholder="Designation" [(ngModel)]="emp_array.designation" required >
+        <span class="error" *ngIf="empdes.invalid && empdes.dirty">Employee Designation is Required</span>
+      </div>
+    </div> 
+    <div class="form-group">
+        <label for="Salary"  class="col-sm-4 control-label">Salary:</label>
+        <div class="col-sm-4">
+        <input type="text" class="form-control" id="empsal" [appHighlight]="color" name="empsal"  placeholder="Salary" [(ngModel)]="emp_array.salary">
+        
+      </div>
+    </div> 
+    <input type="submit" [disabled]="form1.invalid" class="btn btn-primary" style="margin-left:auto;margin-right:auto;display:block;" (click)="updateemp(emp_array.employee_id)" value="Update"/> 
+    </form>
+  </div>
+
+
+  <div class="bs-example container-fluid" >
+       
+     <br/>
+     <br/>
+      <div  class="panel panel-primary" style="width:800px; margin-left:390px;">
+          
+          <div class="panel-heading" style="font-size: 22px; text-align: center; font-family: tahoma;">List Of Employee Details
+              <i class="fa fa-chevron-circle-left pointer" aria-hidden="true" style="margin-left: 500px;" (click)="goBack()"></i>
+          </div>
+      </div>
+      <table class="table table-bordered  table-condensed" style="border:1 solid; width:1000px; margin-left:300px; margin-top:-30px;">
+        <thead>
+              <tr class="btn-primary" style="font-size: 18px;">
+                  <th>S.No</th>
+                  <th style="display:none;">Employee ID</th>
+                  <th>Employee Name
+                     
+                  </th>
+                  <th>Designation</th>
+                  <th>Department</th>
+                  <th>Salary</th>
+                
+              </tr>
+          </thead>
+          <tbody>
+            <tr class="info">
+              <td></td>
+              <td style="display:none;"></td>
+              <td><input [(ngModel)]="searchtext" placeholder="Search" class="form-control"></td>
+              <td></td>
+              <td></td>
+              <td></td>
+             
+            </tr>
+            <tr  *ngFor="let item of employee | filter:'ename':searchtext | orderBy: order:reverse:'case-insensitive' index as i; "  >
+                  <td>{{i+1}}</td>
+                  <td style="display:none;">{{item.employee_id}}</td>
+                  <td><a  data-toggle="modal" data-target="#myModaledit" (click)="onSelect(item)">{{item.ename}}</a></td>
+                  <td>{{item.designation}}</td>
+                  <td>{{item.department}}</td>
+                  <td>{{item.salary | currency: 'INR':'symbol' }}</td>
+                  
+              </tr>
+            
+           </tbody>
+      </table>
+      
+    </div>
